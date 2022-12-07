@@ -11,7 +11,16 @@ def update(truck):
     truck.df = update_weekday(truck.df)
     truck = update_cumsum_distance(truck)
     truck = update_cumsum_time(truck)
+    truck.update_now_state()
+    truck = update_now_state(truck)
     return truck.df
+
+def update_now_state(truck):
+    idx = truck.get_state()
+    idx_2 = (idx+1)%len(truck.df.loc[0,'journey'])
+    label = str(idx)+str(idx_2)+truck.df.loc[0,'vehicleCode']
+    truck.df.loc[0,'now_state']= label
+    return truck
 def set_constant_info(df,vehicle):
     with open('df_to_yaml.yaml', mode="rt", encoding="utf-8") as test_df_to_yaml:
         constant_df = pd.DataFrame(yaml.full_load(test_df_to_yaml)['result'])

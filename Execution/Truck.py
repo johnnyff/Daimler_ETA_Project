@@ -4,15 +4,18 @@ import datetime
 class Truck:
     def __init__(self,df):
         self.df= df
-        self.cum_distance = 0
-        self.cum_time =0
         self.prev_time = 0
-        self.prev_distance =0
         self.prev_timestamp = 0
+        self.cum_distance =0
+        self.cum_time = 0
+        self.state_flag =0
+        self.state=0
+        self.cnt=0
 
     #def set_parameter(self,):
     def set_initial_timestamp(self, timestamp):
-        self.prev_timestamp = datetime.datetime.strptime(timestamp[:-6],'%Y-%m-%dt%H:%M:%S')
+        if(self.prev_timestamp==0):
+            self.prev_timestamp = datetime.datetime.strptime(timestamp[:-6],'%Y-%m-%dt%H:%M:%S')
 
     def set_rootName(self, name):
         self.root_name = name
@@ -26,5 +29,14 @@ class Truck:
     def get_truck_cum_time(self):
         return self.cum_time
 
-    def update_now_state(self,df):
-        return df
+    def get_state(self):
+        return self.state
+
+    def update_now_state(self):
+        if(self.df.loc[0,'is_in_target']!=self.state_flag):
+            self.cnt+=1
+            self.state_flag= self.df.loc[0,'is_in_target']
+            if(self.cnt%2==0):
+                self.state=(self.state+1)%len(self.df['journey']);
+
+

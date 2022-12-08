@@ -1,1 +1,23 @@
 # Daimler_ETA_project
+## features
+- vehicleCode : unique code to identify a vehicle
+- lat : latitude
+- lng : longitude
+- timestamp : timestamp in "Year-Month-Day Hour:Minute:Second" format
+- distance : distance from this data point to the previous one in meters
+- del_time: time from this data point to the previous one in seconds
+- velocity : distance/del_time
+- weekday : day of the week
+- journey : list of target places where vehicle is heading in order
+- velocity_mean_5sec : average speed for 5 seconds
+- velocity_std_5sec : standard deviation of speed for 5 seconds
+- velocity_mean_day : average speed by day of the week
+- velocity_std_day : standard deviation of speed by day of the week
+- cum_sum : accumulative distance per course
+- avg_total_distance : average total distance of course by vehicleCode
+- left_distance : avg_total_distance - cum_sum
+- time_cum_sum : accumulative time per course
+- avg_total_time : average total time of course by vehicleCode
+- now_state : departure + destination + vehicleCode
+  - ex) if vehicle W53 drives from target1 to target2, then 12W53
+- left_time : avg_total_time - time_cum_sum

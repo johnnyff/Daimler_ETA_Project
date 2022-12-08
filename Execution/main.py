@@ -27,7 +27,7 @@ if __name__ == '__main__':
     velocity_weekday_info = pd.read_csv("./data/constant_velocity_weekday.csv", encoding='shift_jis')
 
     #model_load
-    model = pickle.load(open("./model/model_insight.model", 'rb'))
+    model = pickle.load(open("./model/final_model_insight.model", 'rb'))
     df = set_initial_info(df, avg_route_info, vehicleCode, journey)
 
     #make truck instance
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         truck_instance.set_initial_timestamp(argv[3])
 
         #update the instance's values
-        print("input data", input_data)
+        #print("input data", input_data)
         df.loc[0,'lat'] = argv[0]
         df.loc[0,'lng'] = argv[1]
         df.loc[0,'distance'] = float(argv[2])
@@ -59,9 +59,12 @@ if __name__ == '__main__':
 
         df = update(truck_instance)
 
+        if(truck_instance.df.loc[0,'left_distance']==0):
+            print("Vehicle is Arrived! ")
+            break
         ##for checking realtime input data status
         #for i in df.columns:
         #    print(i, " : ", df.loc[0,i])
 
         res = predict_model(df, model)
-        print("left time : ", res)
+        print("left time : {} minutes".format(res))

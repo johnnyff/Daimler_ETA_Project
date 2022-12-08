@@ -32,7 +32,6 @@ def update_constant_value(truck):
     truck.df.loc[0,'velocity_std_day'] = truck.velocity_weekday_info[truck.velocity_weekday_info['weekday']==truck.df.loc[0,'weekday']]['velocity_std_weekday'].values[0]
 
     temp = str(truck.df.loc[0,'timestamp'].round('5s').time())
-    print("temp is ", temp)
     truck.df.loc[0, 'velocity_mean_5sec'] = \
     truck.velocity_5sec_info[truck.velocity_5sec_info['five_sec'] == temp]['velocity_mean_5sec'].values[0]
 
@@ -83,7 +82,6 @@ def update_del_time(truck):
 
 
 def time_processing(df):
-    print
     df['timestamp'] = df['timestamp'].apply(lambda x: datetime.datetime.strptime(x[:-6], '%Y-%m-%dt%H:%M:%S'))
     df['lat'] = df['lat'].astype(float)
     df['lng'] = df['lng'].astype(float)
@@ -91,7 +89,6 @@ def time_processing(df):
 
 def update_isin_target(df):
     def get_gps_distance(location, radi):
-        print("check location ", location)
         # Fuso's target destination dictionary
         target_place = {}
         target_place['1'] = (35.50114245663584, 139.77058608966317)

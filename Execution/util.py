@@ -1,7 +1,13 @@
 from haversine import haversine
 import pandas as pd
 import datetime
-import yaml
+
+def set_initial_info(df,avg_route_info, vehicleCode, journey):
+    df.loc[0, 'avg_total_distance']= avg_route_info[avg_route_info['vehicleCode'] == vehicleCode]['total_distance_mean_vehicle'][0]
+    df.loc[0, 'avg_total_time']= avg_route_info[avg_route_info['vehicleCode'] == vehicleCode]['total_time_mean_vehicle'][0]
+    df.loc[0, 'vehicleCode'] = vehicleCode
+    df.loc[0, 'journey'] = journey
+    return df
 
 def update(truck):
     truck.df = time_processing(truck.df)
@@ -13,7 +19,26 @@ def update(truck):
     truck = update_cumsum_time(truck)
     truck.update_now_state()
     truck = update_now_state(truck)
+    truck.df = update_left_distance(truck.df)
+    truck = update_constant_value(truck)
     return truck.df
+
+def update_left_distance(df):
+    df.loc[0,'left_distance'] = df.loc[0,'avg_total_distance'] - df.loc[0,'cum_sum']
+    return df
+
+def update_constant_value(truck):
+    truck.df.loc[0,'velocity_mean_day'] = truck.velocity_weekday_info[truck.velocity_weekday_info['weekday']==truck.df.loc[0,'weekday']]['velocity_mean_weekday'].values[0]
+    truck.df.loc[0,'velocity_std_day'] = truck.velocity_weekday_info[truck.velocity_weekday_info['weekday']==truck.df.loc[0,'weekday']]['velocity_std_weekday'].values[0]
+
+    temp = str(truck.df.loc[0,'timestamp'].round('5s').time())
+    print("temp is ", temp)
+    truck.df.loc[0, 'velocity_mean_5sec'] = \
+    truck.velocity_5sec_info[truck.velocity_5sec_info['five_sec'] == temp]['velocity_mean_5sec'].values[0]
+
+    truck.df.loc[0, 'velocity_std_5sec'] = \
+    truck.velocity_5sec_info[truck.velocity_5sec_info['five_sec'] == temp]['velocity_std_5sec'].values[0]
+    return truck
 
 def update_now_state(truck):
     idx = truck.get_state()
@@ -21,16 +46,20 @@ def update_now_state(truck):
     label = str(idx)+str(idx_2)+truck.df.loc[0,'vehicleCode']
     truck.df.loc[0,'now_state']= label
     return truck
+
 def set_constant_info(df,vehicle):
-    with open('df_to_yaml.yaml', mode="rt", encoding="utf-8") as test_df_to_yaml:
-        constant_df = pd.DataFrame(yaml.full_load(test_df_to_yaml)['result'])
+   # with open('df_to_yaml.yaml', mode="rt", encoding="utf-8") as test_df_to_yaml:
+    #    constant_df = pd.DataFrame(yaml.full_load(test_df_to_yaml)['result'])
+    constant_df = pd.read_csv("constant_total_distance.csv")
     df.loc[0,'total_distance']=  constant_df[constant_df['vehicleCode']==vehicle]['mean_total_distance'][0]
     df.loc[0,'total_time']=  constant_df[constant_df['vehicleCode']==vehicle]['mean_total_time'][0]
     return df
+
 def update_cumsum_time(truck):
     truck.cum_time += truck.df['del_time']
     truck.df['time_cum_sum'] = truck.cum_time
     return truck
+
 def update_cumsum_distance(truck):
     truck.cum_distance += truck.df['distance']
     truck.df['cum_sum'] = truck.cum_distance

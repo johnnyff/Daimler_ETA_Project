@@ -2,7 +2,7 @@ import util
 import pandas as pd
 import datetime
 class Truck:
-    def __init__(self,df):
+    def __init__(self,df,velocity_5sec_info, velocity_weekday_info):
         self.df= df
         self.prev_time = 0
         self.prev_timestamp = 0
@@ -11,6 +11,8 @@ class Truck:
         self.state_flag =0
         self.state=0
         self.cnt=0
+        self.velocity_5sec_info = velocity_5sec_info
+        self.velocity_weekday_info = velocity_weekday_info
 
     #def set_parameter(self,):
     def set_initial_timestamp(self, timestamp):
